@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0D1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>תעסוקת חוץ · פלוגה ג׳</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Suez+One&display=swap');
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:#0D1117;color:#E6EDF3;font-family:'Rubik','Segoe UI','Arial Hebrew',sans-serif;min-height:100vh;padding-bottom:40px}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid #58A6FF;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.topbar{position:sticky;top:0;z-index:10;background:rgba(13,17,23,.96);backdrop-filter:blur(8px);border-bottom:1px solid #21262D;padding:14px 16px 10px}
+.wrap{max-width:560px;margin:0 auto}
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.title{font-family:'Suez One','Rubik',serif;font-size:19px;line-height:1.2}
+.date{font-size:12.5px;color:#8B949E;margin-top:2px}
+.hbtns{display:flex;gap:6px}
+.hbtn{background:transparent;border:1px solid #30363D;color:#8B949E;border-radius:8px;padding:6px 10px;font-size:12px;transition:all .15s;white-space:nowrap}
+.hbtn.warn{border-color:#F85149;color:#F85149}
+.hbtn.primary{border-color:#1F6FEB;color:#58A6FF}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.stat{background:#161B22;border:1px solid #21262D;border-radius:10px;padding:7px 2px;text-align:center}
+.stat .n{font-size:20px;font-weight:700;line-height:1.1}
+.stat .l{font-size:10.5px;color:#8B949E;margin-top:2px}
+.track{height:5px;background:#21262D;border-radius:3px;margin-top:10px;overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,#2EA043,#3FB950);border-radius:3px;transition:width .3s}
+.plabel{font-size:10.5px;color:#8B949E;text-align:left;margin-top:3px}
+
+.nosave{background:#3D2E00;color:#E3B341;font-size:11.5px;text-align:center;padding:6px 12px;border-bottom:1px solid #5C4400}
+
+.list{max-width:560px;margin:0 auto;padding:14px 12px 0;display:flex;flex-direction:column;gap:12px}
+.card{background:#161B22;border:1px solid #21262D;border-radius:14px;padding:12px 14px;border-right:4px solid var(--c)}
+.chead{display:flex;align-items:center;justify-content:space-between}
+.ctitle{font-size:17px;font-weight:700;color:var(--c)}
+.cbadge{font-size:13px;font-weight:700;border-radius:8px;padding:2px 9px;background:color-mix(in srgb,var(--c) 14%,transparent);color:var(--c)}
+.csub{font-size:12px;color:#8B949E;margin:2px 0 10px}
+.btnrow{display:flex;gap:8px;margin-bottom:10px}
+.copy{flex:1;border:1px solid;border-radius:10px;padding:9px 6px;font-size:13.5px;font-weight:600;transition:all .15s}
+.copy.out{background:color-mix(in srgb,var(--c) 10%,transparent);border-color:color-mix(in srgb,var(--c) 33%,transparent);color:var(--c)}
+.copy.back{background:#23863615;border-color:#3FB95044;color:#3FB950}
+.copy.copied{background:#1F6FEB22;border-color:#58A6FF;color:#58A6FF}
+.copy:disabled{opacity:.35;cursor:default}
+
+.row{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid #21262D;min-height:44px;transition:opacity .15s}
+.row.off{opacity:.45}
+.chk{width:22px;height:22px;min-width:22px;border-radius:7px;border:1.5px solid #444C56;background:transparent;color:#0D1117;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0;transition:all .15s}
+.row.on .chk{background:var(--c);border-color:var(--c)}
+.namebtn{flex:1;background:none;border:none;padding:0;text-align:right;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.pname{font-size:14.5px;color:#E6EDF3}
+.row.off .pname{text-decoration:line-through}
+.pnum{font-size:13px;color:#8B949E;font-weight:600}
+.pnote{font-size:11.5px;color:#8B949E}
+.pill{border:1.5px solid #444C56;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;background:transparent;color:#8B949E;transition:all .15s}
+.pill.back{background:#238636;border-color:#2EA043;color:#fff}
+.azuk{border:1.5px solid #444C56;border-radius:999px;padding:4px 8px;font-size:12px;background:transparent;color:#6E7681;transition:all .15s}
+.azuk.on{background:#3D2E00;border-color:#E3B341;color:#E3B341}
+
+.imp{max-width:560px;margin:0 auto;padding:20px 16px}
+.imp h2{font-family:'Suez One','Rubik',serif;font-size:18px;margin:0 0 6px}
+.steps{font-size:13.5px;color:#8B949E;line-height:1.8;margin:0 0 14px;padding-right:18px}
+.imp textarea{width:100%;min-height:180px;background:#0A0D12;border:1px solid #30363D;border-radius:12px;color:#E6EDF3;font-size:13px;padding:12px;direction:ltr;text-align:left;font-family:ui-monospace,monospace;resize:vertical}
+.imp textarea:focus{outline:none;border-color:#1F6FEB}
+.err{color:#F85149;font-size:13px;margin-top:8px;min-height:18px}
+.improw{display:flex;gap:8px;margin-top:10px}
+.big{flex:1;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;background:#238636;color:#fff;transition:all .15s}
+.big.confirm{background:#9E2A2B}
+.ghost{border:1px solid #30363D;border-radius:12px;padding:13px 16px;font-size:14px;background:transparent;color:#8B949E}
+.foot{text-align:center;font-size:11px;color:#484F58;margin-top:18px;line-height:1.7}
+</style>
+</head>
+<body>
+<div id="nosave" class="nosave" style="display:none">מצב תצוגה בלבד — שמירה אוטומטית תפעל כשהאתר פתוח מהקישור המאוחסן</div>
+<div id="top"></div>
+<div id="main"></div>
+
+<script>
+'use strict';
+// ───────────────────────── מצב גלובלי ─────────────────────────
+var PALETTE=['#FF6B6B','#FF922B','#FFD43B','#94D82D','#51CF66','#20C997','#66D9E8','#339AF0','#5C7CFA','#845EF7','#BE4BDB','#F06595','#FF8787','#FAB005','#22B8CF','#B197FC','#69DB7C','#FFA8A8'];
+var DATA=null;          // {date, columns:[{dest,noPrefix,people:[{name,num,note}]}]}
+var STATE={};           // "ci:pi" -> {s,r,a}  s=יוצא r=חזר a=אזוק
+var VIEW='app';
+var CAN_SAVE=true;
+try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){CAN_SAVE=false;}
+
+function save(){
+  if(!CAN_SAVE)return;
+  try{
+    localStorage.setItem('dutyData',JSON.stringify(DATA));
+    localStorage.setItem('dutyState',JSON.stringify(STATE));
+  }catch(e){}
+}
+function load(){
+  if(!CAN_SAVE)return;
+  try{
+    var d=localStorage.getItem('dutyData');
+    var s=localStorage.getItem('dutyState');
+    if(d)DATA=JSON.parse(d);
+    if(s)STATE=JSON.parse(s)||{};
+  }catch(e){DATA=null;STATE={};}
+}
+function defaults(){
+  var st={};
+  DATA.columns.forEach(function(c,ci){c.people.forEach(function(_,pi){st[ci+':'+pi]={s:1,r:0,a:0};});});
+  return st;
+}
+function st(ci,pi){
+  var k=ci+':'+pi;
+  if(!STATE[k])STATE[k]={s:1,r:0,a:0};
+  return STATE[k];
+}
+var esc=function(s){return String(s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
+
+// ───────────────────────── ייבוא JSON ─────────────────────────
+function parseImport(txt){
+  var t=(txt||'').trim();
+  t=t.replace(/^`{3,}\s*json\s*/i,'').replace(/^`{3,}\s*/,'').replace(/`{3,}\s*$/,'').trim();
+  var obj;
+  try{obj=JSON.parse(t);}catch(e){throw 'ה-JSON לא תקין. העתק שוב את הבלוק המלא מקלוד ונסה שוב.';}
+  if(!obj||!Array.isArray(obj.columns)||obj.columns.length===0)throw 'חסרה רשימת columns בנתונים.';
+  obj.columns.forEach(function(c,i){
+    if(!c.dest)throw 'לעמודה מספר '+(i+1)+' חסר שדה dest.';
+    if(!Array.isArray(c.people))throw 'לעמודה "'+c.dest+'" חסרה רשימת people.';
+    c.noPrefix=!!c.noPrefix;
+    c.people.forEach(function(p){
+      if(!p.name)throw 'נמצא שם ריק בעמודה "'+c.dest+'".';
+      p.num=p.num==null?'':String(p.num);
+      p.note=p.note?String(p.note):'';
+    });
+  });
+  if(!obj.date)obj.date='';
+  return obj;
+}
+
+// ───────────────────────── העתקה ─────────────────────────
+function fallbackCopy(text){
+  try{
+    var ta=document.createElement('textarea');
+    ta.value=text;ta.setAttribute('readonly','');
+    ta.style.cssText='position:fixed;top:-999px;opacity:0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    var ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  }catch(e){return false;}
+}
+function copyText(text,btn){
+  var done=function(){flash(btn);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){if(fallbackCopy(text))done();});
+  }else if(fallbackCopy(text)){done();}
+}
+function flash(btn){
+  if(!btn)return;
+  btn.textContent='✓ הועתק';
+  btn.classList.add('copied');
+  clearTimeout(btn._t);
+  btn._t=setTimeout(function(){
+    btn.textContent=btn.getAttribute('data-label');
+    btn.classList.remove('copied');
+  },2000);
+}
+
+// ───────────────────────── הודעות וואטסאפ ─────────────────────────
+function lineFor(p){return p.name+' '+p.num+'🟨';}   // ללא הערות וללא אזוק
+function outMsg(ci){
+  var c=DATA.columns[ci];
+  var sel=c.people.filter(function(_,pi){return st(ci,pi).s;});
+  if(!sel.length)return null;
+  var title=c.noPrefix?c.dest:((sel.length===1?'יוצא':'יוצאים')+' ל'+c.dest);
+  return '*'+title+'*\n'+sel.map(lineFor).join('\n');
+}
+function backMsg(ci){
+  var c=DATA.columns[ci];
+  var ret=c.people.filter(function(_,pi){var x=st(ci,pi);return x.s&&x.r;});
+  if(!ret.length)return null;
+  var title=(ret.length===1?'חזר':'חזרו')+' מ'+c.dest;
+  return '*'+title+'*\n'+ret.map(lineFor).join('\n');
+}
+
+// ───────────────────────── רנדור ─────────────────────────
+function totals(){
+  var out=0,back=0,az=0;
+  if(DATA)DATA.columns.forEach(function(c,ci){c.people.forEach(function(_,pi){
+    var x=st(ci,pi);
+    if(x.s){out++;if(x.r)back++;if(x.a&&!x.r)az++;}
+  });});
+  return{out:out,back:back,still:out-back,az:az};
+}
+function renderTop(){
+  var top=document.getElementById('top');
+  if(!DATA||VIEW==='import'){top.innerHTML='';return;}
+  var t=totals();
+  var pct=t.out===0?0:Math.round(t.back/t.out*100);
+  top.innerHTML=
+  '<div class="topbar"><div class="wrap">'+
+    '<div class="hdr">'+
+      '<div><div class="title">תעסוקת חוץ · פלוגה ג׳</div>'+
+      '<div class="date">'+esc(DATA.date||'')+'</div></div>'+
+      '<div class="hbtns">'+
+        '<button class="hbtn primary" data-act="newday">📥 יום חדש</button>'+
+        '<button class="hbtn" data-act="reset" data-label="איפוס יום">איפוס יום</button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="stats">'+
+      '<div class="stat"><div class="n" style="color:#58A6FF">'+t.out+'</div><div class="l">יוצאים</div></div>'+
+      '<div class="stat"><div class="n" style="color:#3FB950">'+t.back+'</div><div class="l">חזרו</div></div>'+
+      '<div class="stat"><div class="n" style="color:'+(t.still>0?'#F0883E':'#3FB950')+'">'+t.still+'</div><div class="l">בחוץ</div></div>'+
+      '<div class="stat"><div class="n" style="color:'+(t.az>0?'#E3B341':'#3FB950')+'">'+t.az+'</div><div class="l">🔗 אזוקים</div></div>'+
+    '</div>'+
+    '<div class="track"><div class="fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="plabel">'+pct+'% חזרו</div>'+
+  '</div></div>';
+}
+function renderApp(){
+  var html='<div class="list">';
+  DATA.columns.forEach(function(c,ci){
+    var color=PALETTE[ci%PALETTE.length];
+    var sel=0,ret=0;
+    c.people.forEach(function(_,pi){var x=st(ci,pi);if(x.s){sel++;if(x.r)ret++;}});
+    html+='<div class="card" style="--c:'+color+'">'+
+      '<div class="chead"><div class="ctitle">'+esc(c.dest)+'</div>'+
+      '<div class="cbadge">'+c.people.length+'</div></div>'+
+      '<div class="csub">נבחרו '+sel+' · חזרו '+ret+'</div>'+
+      '<div class="btnrow">'+
+        '<button class="copy out" data-act="copyout" data-ci="'+ci+'" data-label="📋 העתק יציאה" '+(sel===0?'disabled':'')+'>📋 העתק יציאה</button>'+
+        (c.noPrefix?'':'<button class="copy back" data-act="copyback" data-ci="'+ci+'" data-label="📋 העתק חזרה" '+(ret===0?'disabled':'')+'>📋 העתק חזרה</button>')+
+      '</div><div>';
+    c.people.forEach(function(p,pi){
+      var x=st(ci,pi);
+      html+='<div class="row '+(x.s?'on':'off')+'" style="--c:'+color+'">'+
+        '<button class="chk" data-act="sel" data-ci="'+ci+'" data-pi="'+pi+'" aria-label="'+(x.s?'הסר מהיציאה':'הוסף ליציאה')+'">'+(x.s?'✓':'')+'</button>'+
+        '<button class="namebtn" data-act="sel" data-ci="'+ci+'" data-pi="'+pi+'">'+
+          '<span class="pname">'+esc(p.name)+'</span>'+
+          '<span class="pnum">'+esc(p.num)+'</span>'+
+          (p.note?'<span class="pnote">('+esc(p.note)+')</span>':'')+
+        '</button>'+
+        (x.s?'<button class="azuk'+(x.a?' on':'')+'" data-act="azuk" data-ci="'+ci+'" data-pi="'+pi+'" aria-label="אזוק">🔗'+(x.a?' אזוק':'')+'</button>':'')+
+        (x.s?'<button class="pill'+(x.r?' back':'')+'" data-act="ret" data-ci="'+ci+'" data-pi="'+pi+'">'+(x.r?'✓ חזר':'בחוץ')+'</button>':'')+
+      '</div>';
+    });
+    html+='</div></div>';
+  });
+  html+='</div><div class="foot">הסטטוס נשמר אוטומטית במכשיר זה<br>טיפ: הוסף את האתר למסך הבית לגישה מהירה</div>';
+  document.getElementById('main').innerHTML=html;
+}
+function renderImport(){
+  var hasData=!!DATA;
+  document.getElementById('main').innerHTML=
+  '<div class="imp">'+
+    '<h2>'+(hasData?'📥 ייבוא יום חדש':'ברוך הבא 👋')+'</h2>'+
+    '<ol class="steps">'+
+      '<li>שלח לקלוד תמונה של דוח התעסוקה</li>'+
+      '<li>העתק את בלוק ה-JSON שקלוד מחזיר</li>'+
+      '<li>הדבק כאן ולחץ טען</li>'+
+    '</ol>'+
+    '<textarea id="impbox" placeholder=\'{"date":"...","columns":[...]}\' dir="ltr"></textarea>'+
+    '<div class="err" id="imperr"></div>'+
+    '<div class="improw">'+
+      '<button class="big" id="impbtn" data-act="doimport">'+(hasData?'טען יום חדש (יחליף את הקיים)':'טען נתונים')+'</button>'+
+      (hasData?'<button class="ghost" data-act="cancelimport">ביטול</button>':'')+
+    '</div>'+
+  '</div>';
+}
+function render(){
+  if(!DATA)VIEW='import';
+  renderTop();
+  if(VIEW==='import')renderImport();else renderApp();
+}
+
+// ───────────────────────── אירועים ─────────────────────────
+document.addEventListener('click',function(ev){
+  var btn=ev.target.closest('[data-act]');
+  if(!btn)return;
+  var act=btn.getAttribute('data-act');
+  var ci=+btn.getAttribute('data-ci');
+  var pi=+btn.getAttribute('data-pi');
+
+  if(act==='sel'){
+    var x=st(ci,pi);
+    if(x.s){x.s=0;x.r=0;x.a=0;}else{x.s=1;}
+    save();render();
+  }
+  else if(act==='ret'){
+    var x2=st(ci,pi);
+    if(x2.s){x2.r=x2.r?0:1;save();render();}
+  }
+  else if(act==='azuk'){
+    var x3=st(ci,pi);
+    if(x3.s){x3.a=x3.a?0:1;save();render();}
+  }
+  else if(act==='copyout'){
+    var m=outMsg(ci);
+    if(m)copyText(m,btn);
+  }
+  else if(act==='copyback'){
+    var m2=backMsg(ci);
+    if(m2)copyText(m2,btn);
+  }
+  else if(act==='newday'){
+    VIEW='import';render();
+  }
+  else if(act==='cancelimport'){
+    VIEW='app';render();
+  }
+  else if(act==='reset'){
+    if(btn.getAttribute('data-armed')){
+      STATE=defaults();save();render();
+    }else{
+      btn.setAttribute('data-armed','1');
+      btn.textContent='בטוח? לחץ שוב';
+      btn.classList.add('warn');
+      setTimeout(function(){
+        btn.removeAttribute('data-armed');
+        btn.textContent=btn.getAttribute('data-label');
+        btn.classList.remove('warn');
+      },2500);
+    }
+  }
+  else if(act==='doimport'){
+    var box=document.getElementById('impbox');
+    var errEl=document.getElementById('imperr');
+    errEl.textContent='';
+    var obj;
+    try{obj=parseImport(box.value);}
+    catch(msg){errEl.textContent=typeof msg==='string'?msg:'שגיאה בקריאת הנתונים.';return;}
+    if(DATA&&!btn.getAttribute('data-armed')){
+      btn.setAttribute('data-armed','1');
+      btn.textContent='זה ימחק את יום '+(DATA.date||'הנוכחי')+' — לחץ שוב לאישור';
+      btn.classList.add('confirm');
+      setTimeout(function(){
+        if(document.getElementById('impbtn')){
+          btn.removeAttribute('data-armed');
+          btn.textContent='טען יום חדש (יחליף את הקיים)';
+          btn.classList.remove('confirm');
+        }
+      },4000);
+      return;
+    }
+    DATA=obj;
+    STATE=defaults();
+    VIEW='app';
+    save();render();
+    window.scrollTo(0,0);
+  }
+});
+
+// ───────────────────────── אתחול ─────────────────────────
+if(!CAN_SAVE)document.getElementById('nosave').style.display='block';
+load();
+render();
+</script>
+</body>
+</html>
