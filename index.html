@@ -21,7 +21,7 @@ button:focus-visible{outline:2px solid #58A6FF;outline-offset:2px}
 .hdr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
 .title{font-family:'Suez One','Rubik',serif;font-size:19px;line-height:1.2}
 .date{font-size:12.5px;color:#8B949E;margin-top:2px}
-.hbtns{display:flex;gap:6px}
+.hbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .hbtn{background:transparent;border:1px solid #30363D;color:#8B949E;border-radius:8px;padding:6px 10px;font-size:12px;transition:all .15s;white-space:nowrap}
 .hbtn.warn{border-color:#F85149;color:#F85149}
 .hbtn.primary{border-color:#1F6FEB;color:#58A6FF}
@@ -121,6 +121,29 @@ body.locked{overflow:hidden}
 .aconfirm{flex:1;border:1px solid color-mix(in srgb,var(--c) 40%,transparent);border-radius:10px;padding:10px;font-size:14px;font-weight:700;background:color-mix(in srgb,var(--c) 15%,transparent);color:var(--c);transition:all .15s}
 .acancel{border:1px solid #30363D;border-radius:10px;padding:10px 14px;font-size:13px;background:transparent;color:#8B949E}
 
+
+/* ─── רמ"ס 5 ─── */
+.hbtn.r5{border-color:#F8514966;color:#FF7B72}
+.row.r5{background:#F851490F}
+.row.r5 .pname{color:#FF7B72;font-weight:700}
+.r5tag{flex:none;font-size:10px;font-weight:800;color:#FF7B72;border:1px solid #F8514955;background:#F8514912;border-radius:6px;padding:1px 6px}
+.scell.r5{background:#F8514916}
+.scell.r5 .snm{color:#FF7B72;font-weight:700}
+.r5ta{width:100%;min-height:80px;background:#0A0D12;border:1px solid #30363D;border-radius:10px;color:#E6EDF3;font-size:12.5px;padding:10px;font-family:ui-monospace,monospace;resize:vertical}
+.r5ta:focus{outline:none;border-color:#F85149}
+.r5msg{font-size:12.5px;margin-top:6px;min-height:17px}
+.r5msg.ok{color:#3FB950}
+.r5msg.err{color:#F85149}
+.r5list{margin-top:4px}
+.r5row{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px solid #21262D;min-height:40px}
+.r5del{width:30px;height:30px;flex:none;border-radius:8px;border:1px solid #30363D;background:transparent;color:#8B949E;font-size:13px}
+.r5nm{flex:1;min-width:0;font-size:14px;color:#FF7B72;font-weight:600;overflow-wrap:anywhere}
+.r5st{flex:none;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.r5st.ok{color:#3FB950;border:1.5px solid #3FB95055;background:#23863618}
+.r5st.miss{color:#E3B341;border:1.5px solid #E3B34155;background:#3D2E0066}
+.r5sug{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:#8B949E;padding:0 39px 8px 0}
+.r5fix{border:1px solid #3FB95066;border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;background:#23863618;color:#3FB950}
+.r5empty{font-size:12.5px;color:#8B949E;padding:14px 0;text-align:center;border-top:1px solid #21262D}
 .imp{max-width:560px;margin:0 auto;padding:20px 16px}
 .imp h2{font-family:'Suez One','Rubik',serif;font-size:18px;margin:0 0 6px}
 .steps{font-size:13.5px;color:#8B949E;line-height:1.8;margin:0 0 14px;padding-right:18px}
@@ -148,6 +171,10 @@ var STATE={};           // "ci:pi" -> {s,st,a}  s=מסומן ✓  st=0 לא יצ
 var VIEW='app';
 var OPEN_COL=null;       // אינדקס העמודה הפתוחה בחלון מלא
 var ADD_OPEN=null;       // אינדקס העמודה שטופס ההוספה הידנית שלה פתוח
+var RAMAS5=[];          // רשימת שמות רמ"ס 5 — מתאפסת בכל טעינת יום חדש
+var R5SET={};           // שמות מנורמלים לבדיקה מהירה
+var R5_OPEN=false;      // האם חלון ניהול רמ"ס 5 פתוח
+var R5MSG=null;         // הודעת משוב בחלון רמ"ס 5 {text,err}
 var CAN_SAVE=true;
 try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){CAN_SAVE=false;}
 
@@ -156,6 +183,7 @@ function save(){
   try{
     localStorage.setItem('dutyData',JSON.stringify(DATA));
     localStorage.setItem('dutyState',JSON.stringify(STATE));
+    localStorage.setItem('dutyR5',JSON.stringify(RAMAS5));
   }catch(e){}
 }
 function load(){
@@ -165,11 +193,14 @@ function load(){
     var s=localStorage.getItem('dutyState');
     if(d)DATA=JSON.parse(d);
     if(s)STATE=JSON.parse(s)||{};
+    var r=localStorage.getItem('dutyR5');
+    if(r)RAMAS5=JSON.parse(r)||[];
+    if(!Array.isArray(RAMAS5))RAMAS5=[];
     Object.keys(STATE).forEach(function(k){          // המרה מפורמט ישן {s,r,a}
       var v=STATE[k];
       if(v&&typeof v==='object'&&!('st' in v))STATE[k]={s:0,st:v.s?(v.r?2:1):0,a:v.a?1:0};
     });
-  }catch(e){DATA=null;STATE={};}
+  }catch(e){DATA=null;STATE={};RAMAS5=[];}
 }
 function defaults(){
   var o={};
@@ -182,6 +213,68 @@ function st(ci,pi){
   return STATE[k];
 }
 var esc=function(s){return String(s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
+
+// ───────────────────────── רמ"ס 5 ─────────────────────────
+function norm(s){
+  return String(s||'').replace(/[־\-–]/g,' ').replace(/["'`´׳״’‘.]/g,'').replace(/\s+/g,' ').trim();
+}
+function rebuildR5(){
+  R5SET={};
+  RAMAS5.forEach(function(n){var k=norm(n);if(k)R5SET[k]=1;});
+}
+function isR5(name){return R5SET[norm(name)]===1;}
+function tableNames(){
+  var out=[],seen={};
+  if(DATA)DATA.columns.forEach(function(c){c.people.forEach(function(p){
+    var k=norm(p.name);
+    if(k&&seen[k]!==1){seen[k]=1;out.push({raw:p.name,key:k});}
+  });});
+  return out;
+}
+function lev(a,b){
+  var m=a.length,n=b.length,i,j,t;
+  if(!m)return n;
+  if(!n)return m;
+  var prev=[],cur=[];
+  for(j=0;j<=n;j++)prev[j]=j;
+  for(i=1;i<=m;i++){
+    cur[0]=i;
+    for(j=1;j<=n;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a.charAt(i-1)===b.charAt(j-1)?0:1));
+    t=prev;prev=cur;cur=t;
+  }
+  return prev[n];
+}
+function r5Candidate(name){
+  var k=norm(name);
+  if(!k)return null;
+  var best=null,bestD=99;
+  tableNames().forEach(function(n){
+    if(n.key===k)return;
+    var d=((k.length>=4&&n.key.indexOf(k)>-1)||(n.key.length>=4&&k.indexOf(n.key)>-1))?1:lev(k,n.key);
+    if(d<bestD){bestD=d;best=n;}
+  });
+  if(!best)return null;
+  var lim=Math.min(3,Math.max(1,Math.floor(Math.max(k.length,best.key.length)/4)));
+  return bestD<=lim?best.raw:null;
+}
+function parseR5(txt){
+  var t=(txt||'').trim();
+  t=t.replace(/^`{3,}\s*json\s*/i,'').replace(/^`{3,}\s*/,'').replace(/`{3,}\s*$/,'').trim();
+  if(!t)throw 'ההדבקה ריקה — הדבק את הבלוק שקלוד החזיר.';
+  var obj;
+  try{obj=JSON.parse(t);}catch(e){throw 'ה-JSON לא תקין. העתק שוב את הבלוק המלא מקלוד.';}
+  var arr=Array.isArray(obj)?obj:(obj&&obj.ramas5);
+  if(!Array.isArray(arr)||arr.length===0)throw 'לא נמצאה רשימת ramas5 בנתונים.';
+  return arr.map(function(n){return String(n==null?'':n).trim();}).filter(Boolean);
+}
+function addR5(name){
+  var k=norm(name);
+  if(!k)return false;
+  if(RAMAS5.some(function(e){return norm(e)===k;}))return false;
+  RAMAS5.push(String(name).trim());
+  return true;
+}
+
 
 // ───────────────────────── ייבוא JSON ─────────────────────────
 function parseImport(txt){
@@ -275,6 +368,7 @@ function renderTop(){
       '<div class="hbtns">'+
         '<button class="hbtn primary" data-act="newday">📥 יום חדש</button>'+
         '<button class="hbtn" data-act="reset" data-label="איפוס יום">איפוס יום</button>'+
+        '<button class="hbtn r5" data-act="openr5">🔴 רמ"ס 5'+(RAMAS5.length?' · '+RAMAS5.length:'')+'</button>'+
       '</div>'+
     '</div>'+
     '<div class="stats">'+
@@ -294,7 +388,7 @@ function colHtml(ci){
     '<div class="shead"><span class="sname">'+esc(c.dest)+'</span><span class="scount">'+c.people.length+'</span></div>';
   c.people.forEach(function(p,pi){
     var x=st(ci,pi);
-    h+='<div class="scell st'+x.st+(x.s?' ssel':'')+'">'+
+    h+='<div class="scell st'+x.st+(x.s?' ssel':'')+(isR5(p.name)?' r5':'')+'">'+
       '<span class="sdot"></span>'+
       '<span class="snm">'+esc(p.name)+(p.num?' <b>'+esc(p.num)+'</b>':'')+'</span>'+
       (x.a?'<span class="saz">🔗</span>':'')+
@@ -340,13 +434,15 @@ function renderApp(){
     '<span><i class="ldot" style="background:#F0883E"></i>בחוץ</span>'+
     '<span><i class="ldot" style="background:#3FB950"></i>חזר</span>'+
     '<span>🔗 אזוק</span>'+
+    '<span><i class="ldot" style="background:#F85149"></i>רמ"ס 5</span>'+
   '</div>';
   html+='<div class="foot">לחץ על עמודה כדי לפתוח אותה<br>הסטטוס נשמר אוטומטית במכשיר זה</div>';
   if(OPEN_COL!==null&&DATA.columns[OPEN_COL])html+=renderPopup(OPEN_COL);
+  if(R5_OPEN)html+=renderR5();
   document.getElementById('main').innerHTML=html;
   var nw=document.querySelector('.sheetwrap');if(nw)nw.scrollLeft=sx;
   var np=document.querySelector('.popwrap');if(np)np.scrollTop=sy;
-  document.body.classList.toggle('locked',OPEN_COL!==null);
+  document.body.classList.toggle('locked',OPEN_COL!==null||R5_OPEN);
 }
 function renderPopup(ci){
   var c=DATA.columns[ci];
@@ -367,17 +463,19 @@ function renderPopup(ci){
     '</div>'+
     '<div class="toolrow">'+
       '<button class="tool" data-act="selall" data-ci="'+ci+'">'+(allSel?'☐ נקה הכל':'☑ בחר הכל')+'</button>'+
-      '<button class="tool" data-act="desel" data-ci="'+ci+'" '+(sel===0?'disabled':'')+'>✗ בטל סימון</button>'+
+      '<button class="tool" data-act="invert" data-ci="'+ci+'">🔁 החלף סימון</button>'+
       '<button class="tool" data-act="revert" data-ci="'+ci+'" '+(sel===0?'disabled':'')+'>⏪ החזר סטטוס אחורה</button>'+
     '</div>'+
     '<div>';
   c.people.forEach(function(p,pi){
     var x=st(ci,pi);
-    h+='<div class="row'+(x.s?' on':'')+'" style="--c:'+color+'">'+
+    var r5=isR5(p.name);
+    h+='<div class="row'+(x.s?' on':'')+(r5?' r5':'')+'" style="--c:'+color+'">'+
       '<button class="chk" data-act="sel" data-ci="'+ci+'" data-pi="'+pi+'" aria-label="'+(x.s?'בטל בחירה':'בחר')+'">'+(x.s?'✓':'')+'</button>'+
       '<button class="namebtn" data-act="sel" data-ci="'+ci+'" data-pi="'+pi+'">'+
         '<span class="pname">'+esc(p.name)+'</span>'+
         '<span class="pnum">'+esc(p.num)+'</span>'+
+        (r5?'<span class="r5tag">רמ"ס 5</span>':'')+
         (p.note?'<span class="pnote">('+esc(p.note)+')</span>':'')+
       '</button>'+
       '<button class="azuk'+(x.a?' on':'')+'" data-act="azuk" data-ci="'+ci+'" data-pi="'+pi+'" aria-label="אזוק">🔗'+(x.a?' אזוק':'')+'</button>'+
@@ -403,6 +501,48 @@ function renderPopup(ci){
   h+='</div></div>';
   return h;
 }
+function renderR5(){
+  var ts={};
+  tableNames().forEach(function(n){ts[n.key]=1;});
+  var inTable=0;
+  RAMAS5.forEach(function(n){if(ts[norm(n)]===1)inTable++;});
+  var h='<div class="popwrap" data-act="closer5"><div class="pop" data-act="pop" style="--c:#F85149">'+
+    '<div class="phead">'+
+      '<button class="pclose" data-act="closer5" aria-label="סגור">✕</button>'+
+      '<div class="ptitles"><div class="ctitle">🔴 רמ"ס 5</div>'+
+      '<div class="csub">'+(RAMAS5.length?inTable+' מתוך '+RAMAS5.length+' נמצאו בטבלה של היום':'מסומנים באדום בכל המסכים')+'</div></div>'+
+      '<div class="cbadge">'+RAMAS5.length+'</div>'+
+    '</div>'+
+    '<div class="csub" style="margin:0 0 6px">הדבק את הבלוק שקלוד מחזיר מתמונת רשימת הרמ"ס:</div>'+
+    '<textarea id="r5json" class="r5ta" placeholder=\'{"ramas5":["...","..."]}\' dir="ltr"></textarea>'+
+    '<button class="tool" data-act="r5import" style="width:100%;margin-top:8px">📥 טען רשימה</button>'+
+    '<div class="r5msg'+(R5MSG?(R5MSG.err?' err':' ok'):'')+'">'+(R5MSG?esc(R5MSG.text):'')+'</div>'+
+    '<div class="addform" style="margin-top:4px"><div class="addr">'+
+      '<input class="aname" id="r5name" placeholder="הוספה ידנית — שם מלא" autocomplete="off">'+
+      '<button class="aconfirm" data-act="r5add" style="flex:none">➕ הוסף</button>'+
+    '</div></div>'+
+    '<div class="r5list">';
+  if(!RAMAS5.length){
+    h+='<div class="r5empty">הרשימה ריקה — הדבק את ה-JSON מהתמונה או הוסף שם ידנית</div>';
+  }
+  RAMAS5.forEach(function(n,i){
+    var found=ts[norm(n)]===1;
+    var cand=found?null:r5Candidate(n);
+    h+='<div class="r5row">'+
+      '<button class="r5del" data-act="r5del" data-i="'+i+'" aria-label="הסר מהרשימה">✕</button>'+
+      '<span class="r5nm">'+esc(n)+'</span>'+
+      (found?'<span class="r5st ok">✓ בטבלה</span>':'<span class="r5st miss">לא נמצא</span>')+
+    '</div>';
+    if(cand){
+      h+='<div class="r5sug">אולי הכוונה ל"'+esc(cand)+'"? <button class="r5fix" data-act="r5fix" data-i="'+i+'" data-n="'+esc(cand)+'">✓ עדכן</button></div>';
+    }
+  });
+  h+='</div>'+
+    (RAMAS5.length?'<button class="tool" data-act="r5clear" data-label="🗑 נקה את כל הרשימה" style="width:100%;margin-top:10px">🗑 נקה את כל הרשימה</button>':'')+
+    '<div class="foot" style="margin-top:12px">לא נכלל בהודעות המועתקות לוואטסאפ · מתאפס בטעינת יום חדש</div>'+
+  '</div></div>';
+  return h;
+}
 function renderImport(){
   var hasData=!!DATA;
   document.getElementById('main').innerHTML=
@@ -412,6 +552,7 @@ function renderImport(){
       '<li>שלח לקלוד תמונה של דוח התעסוקה</li>'+
       '<li>העתק את בלוק ה-JSON שקלוד מחזיר</li>'+
       '<li>הדבק כאן ולחץ טען</li>'+
+      '<li>אופציונלי: אחרי הטעינה פתח 🔴 רמ"ס 5 והדבק את רשימת הכלואים</li>'+
     '</ol>'+
     '<textarea id="impbox" placeholder=\'{"date":"...","columns":[...]}\' dir="ltr"></textarea>'+
     '<div class="err" id="imperr"></div>'+
@@ -456,8 +597,8 @@ document.addEventListener('click',function(ev){
     DATA.columns[ci].people.forEach(function(_,pi){st(ci,pi).s=all?0:1;});
     save();render();
   }
-  else if(act==='desel'){
-    DATA.columns[ci].people.forEach(function(_,pi){st(ci,pi).s=0;});
+  else if(act==='invert'){
+    DATA.columns[ci].people.forEach(function(_,pi){var v=st(ci,pi);v.s=v.s?0:1;});
     save();render();
   }
   else if(act==='revert'){
@@ -520,6 +661,67 @@ document.addEventListener('click',function(ev){
       },2500);
     }
   }
+  else if(act==='openr5'){
+    R5_OPEN=true;OPEN_COL=null;ADD_OPEN=null;R5MSG=null;render();
+  }
+  else if(act==='closer5'){
+    R5_OPEN=false;R5MSG=null;render();
+  }
+  else if(act==='r5import'){
+    var ta=document.getElementById('r5json');
+    var tv=ta?ta.value:'';
+    var names;
+    try{names=parseR5(tv);}
+    catch(msg){
+      R5MSG={text:typeof msg==='string'?msg:'שגיאה בקריאת הנתונים.',err:true};
+      render();
+      var ta2=document.getElementById('r5json');
+      if(ta2)ta2.value=tv;
+      return;
+    }
+    var added=0,dup=0;
+    names.forEach(function(n){if(addR5(n))added++;else dup++;});
+    rebuildR5();
+    R5MSG={text:'✓ נוספו '+added+' שמות'+(dup?' · '+dup+' כבר היו ברשימה':''),err:false};
+    save();render();
+  }
+  else if(act==='r5add'){
+    var ne=document.getElementById('r5name');
+    var nv=(ne&&ne.value||'').trim();
+    if(!nv){if(ne){ne.classList.add('bad');ne.focus();}return;}
+    if(addR5(nv)){rebuildR5();R5MSG=null;save();render();}
+    else{R5MSG={text:'"'+nv+'" כבר נמצא ברשימה.',err:true};render();}
+  }
+  else if(act==='r5del'){
+    var di=+btn.getAttribute('data-i');
+    if(isFinite(di)&&RAMAS5[di]!=null){RAMAS5.splice(di,1);rebuildR5();R5MSG=null;save();render();}
+  }
+  else if(act==='r5fix'){
+    var fi=+btn.getAttribute('data-i');
+    var fn=btn.getAttribute('data-n')||'';
+    if(isFinite(fi)&&fn&&RAMAS5[fi]!=null){
+      var fk=norm(fn);
+      if(RAMAS5.some(function(e,j){return j!==fi&&norm(e)===fk;}))RAMAS5.splice(fi,1);
+      else RAMAS5[fi]=fn;
+      rebuildR5();R5MSG=null;save();render();
+    }
+  }
+  else if(act==='r5clear'){
+    if(btn.getAttribute('data-armed')){
+      RAMAS5=[];rebuildR5();R5MSG=null;save();render();
+    }else{
+      btn.setAttribute('data-armed','1');
+      btn.textContent='בטוח? לחץ שוב למחיקת כל הרשימה';
+      btn.style.borderColor='#F85149';btn.style.color='#F85149';
+      setTimeout(function(){
+        if(btn.isConnected){
+          btn.removeAttribute('data-armed');
+          btn.textContent=btn.getAttribute('data-label');
+          btn.style.borderColor='';btn.style.color='';
+        }
+      },2500);
+    }
+  }
   else if(act==='doimport'){
     var box=document.getElementById('impbox');
     var errEl=document.getElementById('imperr');
@@ -544,6 +746,10 @@ document.addEventListener('click',function(ev){
     STATE=defaults();
     OPEN_COL=null;
     ADD_OPEN=null;
+    RAMAS5=[];
+    rebuildR5();
+    R5_OPEN=false;
+    R5MSG=null;
     VIEW='app';
     save();render();
     window.scrollTo(0,0);
@@ -556,14 +762,20 @@ document.addEventListener('keydown',function(ev){
     var b=document.querySelector('[data-act="addconfirm"]');
     if(b)b.click();
   }
+  if(ev.key==='Enter'&&ev.target&&ev.target.id==='r5name'){
+    ev.preventDefault();
+    var rb=document.querySelector('[data-act="r5add"]');
+    if(rb)rb.click();
+  }
 });
 document.addEventListener('input',function(ev){
-  if(ev.target&&ev.target.id==='addname')ev.target.classList.remove('bad');
+  if(ev.target&&(ev.target.id==='addname'||ev.target.id==='r5name'))ev.target.classList.remove('bad');
 });
 
 // ───────────────────────── אתחול ─────────────────────────
 if(!CAN_SAVE)document.getElementById('nosave').style.display='block';
 load();
+rebuildR5();
 render();
 </script>
 </body>
