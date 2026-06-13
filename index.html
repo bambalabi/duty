@@ -207,6 +207,8 @@ var R5SET={};           // שמות מנורמלים לבדיקה מהירה
 var R5_OPEN=false;      // האם חלון ניהול רמ"ס 5 פתוח
 var R5MSG=null;         // הודעת משוב בחלון רמ"ס 5 {text,err}
 var R5CUFF=null;        // אזהרת אזוק לפני יציאה {ci, list:[{pi,name,num}]}
+var R5UNCUFF=null;      // אזהרת החזרת אזיקים בחזרה {ci, list:[{pi,name,num}]}
+var OFF_CONFIRM=null;   // אינדקס עמודה הממתינה לאישור השבתה
 var CAN_SAVE=true;
 try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){CAN_SAVE=false;}
 
@@ -236,12 +238,12 @@ function load(){
 }
 function defaults(){
   var o={};
-  DATA.columns.forEach(function(c,ci){c.people.forEach(function(_,pi){o[ci+':'+pi]={s:0,st:0,a:0};});});
+  DATA.columns.forEach(function(c,ci){c.people.forEach(function(_,pi){o[ci+':'+pi]={s:0,st:0,a:0,ao:0};});});
   return o;
 }
 function st(ci,pi){
   var k=ci+':'+pi;
-  if(!STATE[k])STATE[k]={s:0,st:0,a:0};
+  if(!STATE[k])STATE[k]={s:0,st:0,a:0,ao:0};
   return STATE[k];
 }
 var esc=function(s){return String(s).replace(/[&<>"']/g,function(m){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});};
@@ -384,7 +386,7 @@ function totals(){
     var x=st(ci,pi);total++;
     if(x.st===1)out++;
     if(x.st===2)back++;
-    if(x.a&&x.st!==2)az++;
+    if((x.a&&x.st!==2)||x.ao)az++;
   });});
   return{total:total,out:out,back:back,az:az};
 }
@@ -480,10 +482,12 @@ function renderApp(){
   if(R5_OPEN)html+=renderR5();
   if(OPEN_STAT)html+=renderStatPopup(OPEN_STAT);
   if(R5CUFF)html+=renderCuff();
+  if(R5UNCUFF)html+=renderUncuff();
+  if(OFF_CONFIRM!==null)html+=renderOffConfirm();
   document.getElementById('main').innerHTML=html;
   var nw=document.querySelector('.sheetwrap');if(nw)nw.scrollLeft=sx;
   var np=document.querySelector('.popwrap');if(np)np.scrollTop=sy;
-  document.body.classList.toggle('locked',OPEN_COL!==null||R5_OPEN||!!OPEN_STAT||!!R5CUFF);
+  document.body.classList.toggle('locked',OPEN_COL!==null||R5_OPEN||!!OPEN_STAT||!!R5CUFF||!!R5UNCUFF||OFF_CONFIRM!==null);
 }
 function renderPopup(ci){
   var c=DATA.columns[ci];
@@ -599,7 +603,7 @@ function collectStat(kind){
       if(kind==='total')match=true;
       else if(kind==='out')match=x.st===1;
       else if(kind==='back')match=x.st===2;
-      else if(kind==='az')match=!!x.a&&x.st!==2;
+      else if(kind==='az')match=(!!x.a&&x.st!==2)||!!x.ao;
       if(match)out.push({p:p,x:x,dest:c.dest,color:color});
     });
   });
@@ -679,10 +683,68 @@ function renderCuff(){
   h+='</div>'+
     '<div class="cuffq">'+(many?'האם להוציא אותם אזוקים?':'האם להוציאו אזוק?')+'</div>'+
     '<div class="cuffrow">'+
-      '<button class="cuffyes" data-act="cuffyes">🔗 כן, '+(many?'אזוקים וצא':'אזוק וצא')+'</button>'+
-      '<button class="cuffno" data-act="cuffno">צא בלי אזוק</button>'+
+      '<button class="cuffyes" data-act="cuffyes">🔗 '+(many?'כן, יוצאים אזוקים':'כן, יוצא אזוק')+'</button>'+
+      '<button class="cuffno" data-act="cuffno">ללא אזיקה</button>'+
     '</div>'+
     '<button class="acancel" data-act="cuffcancel" style="width:100%;margin-top:8px">ביטול</button>'+
+  '</div></div>';
+  return h;
+}
+function r5ReturnCuff(ci){
+  var out=[];
+  DATA.columns[ci].people.forEach(function(p,pi){
+    var x=st(ci,pi);
+    if(x.s&&x.a&&!x.ao&&isR5(p.name))out.push({pi:pi,name:p.name,num:p.num});
+  });
+  return out;
+}
+function applyBack(ci){
+  var m=backMsg(ci);
+  if(!m)return;
+  DATA.columns[ci].people.forEach(function(_,pi){var p=st(ci,pi);if(p.s)p.st=2;});
+  save();render();
+  copyText(m,document.querySelector('.copy.back[data-ci="'+ci+'"]'));
+}
+function renderUncuff(){
+  if(!DATA||!DATA.columns[R5UNCUFF.ci])return '';
+  var c=DATA.columns[R5UNCUFF.ci];
+  var list=R5UNCUFF.list;
+  var many=list.length>1;
+  var h='<div class="popwrap" data-act="uncuffcancel"><div class="pop cuffpop" data-act="pop" style="--c:#F85149">'+
+    '<div class="phead">'+
+      '<div class="ptitles"><div class="ctitle" style="color:#FF7B72">🔗 החזרת אזיקים · רמ"ס 5</div>'+
+      '<div class="csub">לפני סימון חזרה מ'+esc(c.dest)+'</div></div>'+
+      '<div class="cbadge" style="--c:#F85149">'+list.length+'</div>'+
+    '</div>'+
+    '<div class="cuffwarn">'+(many?'השמות הבאים יצאו אזוקים':'השם הבא יצא אזוק')+':</div>'+
+    '<div class="r5list">';
+  list.forEach(function(it){
+    h+='<div class="r5row"><span class="r5nm">'+esc(it.name)+(it.num?' <b style="color:#8B949E;font-weight:600">'+esc(it.num)+'</b>':'')+'</span></div>';
+  });
+  h+='</div>'+
+    '<div class="cuffq">'+(many?'האם האזיקים חזרו איתם?':'האם האזיקים חזרו איתו?')+'</div>'+
+    '<div class="cuffrow">'+
+      '<button class="cuffyes" data-act="uncuffyes">🔓 '+(many?'כן, האזיקים חזרו':'כן, האזיק חזר')+'</button>'+
+      '<button class="cuffno" data-act="uncuffno">'+(many?'לא, נשארו בשטח':'לא, נשאר בשטח')+'</button>'+
+    '</div>'+
+    '<button class="acancel" data-act="uncuffcancel" style="width:100%;margin-top:8px">ביטול</button>'+
+  '</div></div>';
+  return h;
+}
+function renderOffConfirm(){
+  if(!DATA||!DATA.columns[OFF_CONFIRM])return '';
+  var c=DATA.columns[OFF_CONFIRM];
+  var color=PALETTE[OFF_CONFIRM%PALETTE.length];
+  var h='<div class="popwrap" data-act="offcancel"><div class="pop" data-act="pop" style="--c:'+color+'">'+
+    '<div class="phead">'+
+      '<div class="ptitles"><div class="ctitle">🚫 השבתת עמודה</div>'+
+      '<div class="csub">'+esc(c.dest)+'</div></div>'+
+    '</div>'+
+    '<div class="cuffwarn">להשבית את העמודה <b>'+esc(c.dest)+'</b>? היא תוסתר מהסיכומים ותסומן כמושבתת עד שתופעל מחדש.</div>'+
+    '<div class="cuffrow" style="margin-top:12px">'+
+      '<button class="cuffyes" data-act="offconfirm" style="background:#3D1417;border-color:#F85149;color:#FF7B72">🚫 השבת עמודה</button>'+
+      '<button class="cuffno" data-act="offcancel">ביטול</button>'+
+    '</div>'+
   '</div></div>';
   return h;
 }
@@ -775,16 +837,38 @@ document.addEventListener('click',function(ev){
     R5CUFF=null;render();
   }
   else if(act==='toggleoff'){
-    DATA.columns[ci].disabled=!DATA.columns[ci].disabled;
-    save();render();
+    if(DATA.columns[ci].disabled){DATA.columns[ci].disabled=false;save();render();}
+    else{OFF_CONFIRM=ci;render();}
+  }
+  else if(act==='offconfirm'){
+    if(OFF_CONFIRM!==null&&DATA.columns[OFF_CONFIRM]){DATA.columns[OFF_CONFIRM].disabled=true;}
+    OFF_CONFIRM=null;save();render();
+  }
+  else if(act==='offcancel'){
+    OFF_CONFIRM=null;render();
   }
   else if(act==='copyback'){
-    var m2=backMsg(ci);
-    if(m2){
-      DATA.columns[ci].people.forEach(function(_,pi){var p=st(ci,pi);if(p.s)p.st=2;});
-      save();render();
-      copyText(m2,document.querySelector('.copy.back[data-ci="'+ci+'"]')||btn);
+    if(!backMsg(ci))return;
+    var pendB=r5ReturnCuff(ci);
+    if(pendB.length){R5UNCUFF={ci:ci,list:pendB};render();return;}
+    applyBack(ci);
+  }
+  else if(act==='uncuffyes'){
+    if(R5UNCUFF){
+      var uc=R5UNCUFF.ci;
+      R5UNCUFF.list.forEach(function(it){var x=st(uc,it.pi);x.a=0;x.ao=0;});
+      R5UNCUFF=null;applyBack(uc);
     }
+  }
+  else if(act==='uncuffno'){
+    if(R5UNCUFF){
+      var uc2=R5UNCUFF.ci;
+      R5UNCUFF.list.forEach(function(it){st(uc2,it.pi).ao=1;});
+      R5UNCUFF=null;applyBack(uc2);
+    }
+  }
+  else if(act==='uncuffcancel'){
+    R5UNCUFF=null;render();
   }
   else if(act==='addopen'){
     ADD_OPEN=ci;render();
@@ -926,6 +1010,8 @@ document.addEventListener('keydown',function(ev){
   if((ev.key==='Enter'||ev.key===' ')&&ev.target&&ev.target.getAttribute&&ev.target.getAttribute('data-act')==='openstat'){
     ev.preventDefault();ev.target.click();return;
   }
+  if(ev.key==='Escape'&&OFF_CONFIRM!==null){OFF_CONFIRM=null;render();return;}
+  if(ev.key==='Escape'&&R5UNCUFF){R5UNCUFF=null;render();return;}
   if(ev.key==='Escape'&&R5CUFF){R5CUFF=null;render();return;}
   if(ev.key==='Escape'&&OPEN_STAT){OPEN_STAT=null;render();return;}
   if(ev.key==='Enter'&&ADD_OPEN!==null&&ev.target&&/^add(name|num|note)$/.test(ev.target.id||'')){
