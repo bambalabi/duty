@@ -107,6 +107,16 @@ button:focus-visible{outline:2px solid #58A6FF;outline-offset:2px}
 .strow.r5 .pname{color:#FF7B72;font-weight:700}
 .stnm{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
 .stev{flex:none;font-size:11px;font-weight:600;border-radius:8px;padding:3px 9px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c);white-space:nowrap;max-width:42%;overflow:hidden;text-overflow:ellipsis}
+.stedit{flex:none;width:30px;height:30px;border-radius:8px;border:1px solid #30363D;background:transparent;color:#8B949E;font-size:13px;line-height:1}
+.stedit:hover,.stedit:active{border-color:var(--c);color:#E6EDF3}
+.strow.editing{align-items:stretch}
+.editbox{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.editrow{display:flex;gap:8px}
+.ename,.enum{background:#0A0D12;border:1px solid #30363D;border-radius:10px;color:#E6EDF3;font-size:16px;padding:9px 11px;font-family:inherit;min-width:0}
+.ename{flex:1}
+.enum{width:90px;flex:none;text-align:center}
+.ename:focus,.enum:focus{outline:none;border-color:var(--c)}
+.ename.bad{border-color:#F85149}
 
 /* ─── חלון עמודה ─── */
 body.locked{overflow:hidden}
@@ -209,6 +219,7 @@ var R5MSG=null;         // הודעת משוב בחלון רמ"ס 5 {text,err}
 var R5CUFF=null;        // אזהרת אזוק לפני יציאה {ci, list:[{pi,name,num}]}
 var R5UNCUFF=null;      // אזהרת החזרת אזיקים בחזרה {ci, list:[{pi,name,num}]}
 var OFF_CONFIRM=null;   // אינדקס עמודה הממתינה לאישור השבתה
+var EDIT_NAME=null;     // עריכת שם בחלון הסטטיסטיקה {ci,pi}
 var CAN_SAVE=true;
 try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){CAN_SAVE=false;}
 
@@ -604,7 +615,7 @@ function collectStat(kind){
       else if(kind==='out')match=x.st===1;
       else if(kind==='back')match=x.st===2;
       else if(kind==='az')match=(!!x.a&&x.st!==2)||!!x.ao;
-      if(match)out.push({p:p,x:x,dest:c.dest,color:color});
+      if(match)out.push({p:p,x:x,dest:c.dest,color:color,ci:ci,pi:pi});
     });
   });
   return out;
@@ -631,21 +642,39 @@ function renderStatPopup(kind){
     h+='<div>';
     list.forEach(function(it){
       var x=it.x,p=it.p,r5=isR5(p.name);
-      h+='<div class="strow'+(r5?' r5':'')+'" style="--c:'+it.color+'">'+
-        '<span class="sdot" style="background:'+it.color+';width:9px;height:9px"></span>'+
-        '<span class="stnm">'+
-          '<span class="pname">'+esc(p.name)+'</span>'+
-          (p.num?'<span class="pnum">'+esc(p.num)+'</span>':'')+
-          (r5?'<span class="r5tag">רמ"ס 5</span>':'')+
-          (x.a?'<span class="saz">🔗</span>':'')+
-        '</span>'+
-        '<span class="stev">'+esc(it.dest)+'</span>'+
-        '<span class="stat s'+x.st+'">'+(x.st===2?'✓ חזר':(x.st===1?'בחוץ':'לא יצא'))+'</span>'+
-      '</div>';
+      var editing=EDIT_NAME&&EDIT_NAME.ci===it.ci&&EDIT_NAME.pi===it.pi;
+      if(editing){
+        h+='<div class="strow editing" style="--c:'+it.color+'">'+
+          '<span class="sdot" style="background:'+it.color+';width:9px;height:9px"></span>'+
+          '<div class="editbox">'+
+            '<div class="editrow">'+
+              '<input class="ename" id="ename" value="'+esc(p.name)+'" placeholder="שם מלא" autocomplete="off">'+
+              '<input class="enum" id="enum" value="'+esc(p.num||'')+'" placeholder="מס\'" autocomplete="off">'+
+            '</div>'+
+            '<div class="editrow">'+
+              '<button class="aconfirm" data-act="editsave" data-ci="'+it.ci+'" data-pi="'+it.pi+'">✓ שמור</button>'+
+              '<button class="acancel" data-act="editcancel">ביטול</button>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+      }else{
+        h+='<div class="strow'+(r5?' r5':'')+'" style="--c:'+it.color+'">'+
+          '<span class="sdot" style="background:'+it.color+';width:9px;height:9px"></span>'+
+          '<span class="stnm">'+
+            '<span class="pname">'+esc(p.name)+'</span>'+
+            (p.num?'<span class="pnum">'+esc(p.num)+'</span>':'')+
+            (r5?'<span class="r5tag">רמ"ס 5</span>':'')+
+            (x.a?'<span class="saz">🔗</span>':'')+
+          '</span>'+
+          '<button class="stedit" data-act="editname" data-ci="'+it.ci+'" data-pi="'+it.pi+'" aria-label="ערוך שם">✏️</button>'+
+          '<span class="stev">'+esc(it.dest)+'</span>'+
+          '<span class="stat s'+x.st+'">'+(x.st===2?'✓ חזר':(x.st===1?'בחוץ':'לא יצא'))+'</span>'+
+        '</div>';
+      }
     });
     h+='</div>';
   }
-  h+='<div class="foot" style="margin-top:12px">לחץ ✕ או מחוץ לחלון כדי לסגור</div>';
+  h+='<div class="foot" style="margin-top:12px">לחץ ✏️ לתיקון שם · ✕ או מחוץ לחלון כדי לסגור</div>';
   return h+'</div></div>';
 }
 // ───────────────────────── אזהרת אזוק רמ"ס 5 לפני יציאה ─────────────────────────
@@ -799,10 +828,29 @@ document.addEventListener('click',function(ev){
   }
   else if(act==='openstat'){
     OPEN_STAT=btn.getAttribute('data-stat')||'total';
-    OPEN_COL=null;R5_OPEN=false;ADD_OPEN=null;render();
+    OPEN_COL=null;R5_OPEN=false;ADD_OPEN=null;EDIT_NAME=null;render();
   }
   else if(act==='closestat'){
-    OPEN_STAT=null;render();
+    OPEN_STAT=null;EDIT_NAME=null;render();
+  }
+  else if(act==='editname'){
+    EDIT_NAME={ci:ci,pi:pi};render();
+    var ee=document.getElementById('ename');
+    if(ee){ee.focus();ee.select();}
+  }
+  else if(act==='editsave'){
+    var enEl=document.getElementById('ename');
+    var nm2=(enEl&&enEl.value||'').trim();
+    if(!nm2){if(enEl){enEl.classList.add('bad');enEl.focus();}return;}
+    var enumEl=document.getElementById('enum');
+    if(DATA.columns[ci]&&DATA.columns[ci].people[pi]){
+      DATA.columns[ci].people[pi].name=nm2;
+      DATA.columns[ci].people[pi].num=(enumEl&&enumEl.value||'').trim();
+    }
+    EDIT_NAME=null;save();render();
+  }
+  else if(act==='editcancel'){
+    EDIT_NAME=null;render();
   }
   else if(act==='selall'){
     var all=DATA.columns[ci].people.length>0&&DATA.columns[ci].people.every(function(_,pi){return st(ci,pi).s;});
@@ -1013,7 +1061,14 @@ document.addEventListener('keydown',function(ev){
   if(ev.key==='Escape'&&OFF_CONFIRM!==null){OFF_CONFIRM=null;render();return;}
   if(ev.key==='Escape'&&R5UNCUFF){R5UNCUFF=null;render();return;}
   if(ev.key==='Escape'&&R5CUFF){R5CUFF=null;render();return;}
+  if(ev.key==='Escape'&&EDIT_NAME){EDIT_NAME=null;render();return;}
   if(ev.key==='Escape'&&OPEN_STAT){OPEN_STAT=null;render();return;}
+  if(ev.key==='Enter'&&EDIT_NAME&&ev.target&&/^e(name|num)$/.test(ev.target.id||'')){
+    ev.preventDefault();
+    var eb=document.querySelector('[data-act="editsave"]');
+    if(eb)eb.click();
+    return;
+  }
   if(ev.key==='Enter'&&ADD_OPEN!==null&&ev.target&&/^add(name|num|note)$/.test(ev.target.id||'')){
     ev.preventDefault();
     var b=document.querySelector('[data-act="addconfirm"]');
