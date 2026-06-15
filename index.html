@@ -195,6 +195,83 @@ body.locked{overflow:hidden}
 .big.confirm{background:#9E2A2B}
 .ghost{border:1px solid #30363D;border-radius:12px;padding:13px 16px;font-size:14px;background:transparent;color:#8B949E}
 .foot{text-align:center;font-size:11px;color:#484F58;margin-top:18px;line-height:1.7}
+
+/* ─── דיווח אירוע חדש (תחתית הטבלה) ─── */
+.newevwrap{max-width:560px;margin:16px auto 0;padding:0 14px;--c:#3FB950}
+.newevbtn{width:100%}
+.newevform{background:#161B22;border:1px solid #21262D;border-radius:14px;padding:14px;margin-top:0;border-right:4px solid var(--c)}
+.newevhdr{font-size:14px;font-weight:700;color:#3FB950;margin-bottom:2px}
+.newevsub{font-size:11.5px;color:#8B949E;margin-bottom:4px}
+.nevrow{align-items:stretch}
+.nevdel{width:42px;flex:none;border:1px solid #30363D;border-radius:10px;background:transparent;color:#8B949E;font-size:14px}
+.nevdel:hover,.nevdel:active{border-color:#F0883E66;color:#F0883E}
+
+/* ─── דף הגדרות ─── */
+.settings .sethead{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.settings .sethead h2{margin:0}
+.setsec{background:#161B22;border:1px solid #21262D;border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.setsec h3{font-size:14px;margin:0 0 8px;color:#E6EDF3}
+.setrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #21262D}
+.setsec h3+.setrow{border-top:none}
+.setrow label{flex:none;width:84px;font-size:13.5px;color:#C9D1D9}
+.setrow input[type=range]{flex:1;min-width:0;accent-color:#1F6FEB;height:24px}
+.setval{flex:none;width:48px;text-align:left;font-size:12.5px;color:#8B949E;font-weight:600}
+.renrow{gap:8px}
+.rendot{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}
+.rendest{flex:1}
+.toggle{width:48px;height:27px;flex:none;border-radius:999px;border:1px solid #30363D;background:#21262D;position:relative;padding:0;transition:all .15s}
+.toggle .knob{position:absolute;top:2px;right:2px;width:21px;height:21px;border-radius:50%;background:#8B949E;transition:all .15s}
+.toggle.on{background:#238636;border-color:#2EA043}
+.toggle.on .knob{right:auto;left:2px;background:#fff}
+
+/* ─── גודל טקסט (מתכוונן בהגדרות) ─── */
+:root{--tscale:1}
+.title{font-size:calc(19px*var(--tscale))}
+.date{font-size:calc(12.5px*var(--tscale))}
+.stats .stat .n{font-size:calc(20px*var(--tscale))}
+.stats .stat .l{font-size:calc(10.5px*var(--tscale))}
+.ctitle{font-size:calc(17px*var(--tscale))}
+.csub{font-size:calc(12px*var(--tscale))}
+.pname{font-size:calc(14.5px*var(--tscale))}
+.pnum{font-size:calc(13px*var(--tscale))}
+.pnote{font-size:calc(11.5px*var(--tscale))}
+.sheet:not(.grid) .scell{font-size:calc(11.5px*var(--tscale))}
+.sheet:not(.grid) .shead{font-size:calc(12.5px*var(--tscale))}
+.copy{font-size:calc(13.5px*var(--tscale))}
+.tool{font-size:calc(12.5px*var(--tscale))}
+.hbtn{font-size:calc(12px*var(--tscale))}
+.row .stat,.strow .stat{font-size:calc(11.5px*var(--tscale))}
+.r5nm{font-size:calc(14px*var(--tscale))}
+.foot{font-size:calc(11px*var(--tscale))}
+.legend{font-size:calc(11px*var(--tscale))}
+
+/* ─── מצב בהיר ─── */
+body.light{background:#F6F8FA;color:#1F2328}
+body.light .topbar{background:rgba(255,255,255,.96);border-bottom-color:#D0D7DE}
+body.light .title{color:#1F2328}
+body.light .nosave{background:#FFF8C5;color:#7D4E00;border-bottom-color:#EAC54F}
+body.light .date,body.light .csub,body.light .pnum,body.light .pnote,body.light .plabel,body.light .foot,body.light .legend,body.light .soff,body.light .setval,body.light .newevsub{color:#57606A}
+body.light .stat,body.light .card,body.light .setsec,body.light .newevform{background:#FFFFFF;border-color:#D0D7DE}
+body.light .track{background:#EAEEF2}
+body.light .sheet{background:#FFFFFF;border-color:#D0D7DE}
+body.light .scol{border-left-color:#D8DEE4}
+body.light .shead{background:#EAEEF2;border-bottom-color:#D0D7DE}
+body.light .scell{border-bottom-color:#EAEEF2}
+body.light .snm{color:#1F2328}
+body.light .snm b{color:#57606A}
+body.light .pop{background:#FFFFFF;border-color:#D0D7DE}
+body.light .popwrap{background:rgba(140,149,159,.4)}
+body.light .row,body.light .strow,body.light .setrow{border-top-color:#EAEEF2}
+body.light .pname{color:#1F2328}
+body.light .chk{border-color:#AFB8C1;color:#FFFFFF}
+body.light .hbtn{border-color:#D0D7DE;color:#57606A}
+body.light .tool{border-color:#D0D7DE;color:#1F2328}
+body.light .ename,body.light .enum,body.light .addform input,body.light .imp textarea,body.light .r5ta,body.light .setrow input[type=range]{background:#FFFFFF;border-color:#D0D7DE;color:#1F2328}
+body.light .setrow input[type=range]{background:transparent}
+body.light .stedit,body.light .pclose,body.light .azuk,body.light .offbtn,body.light .addbtn,body.light .acancel,body.light .nevdel{border-color:#D0D7DE;color:#57606A}
+body.light .setsec h3,body.light .setrow label{color:#1F2328}
+body.light .toggle{background:#D0D7DE;border-color:#AFB8C1}
+body.light .toggle .knob{background:#FFFFFF}
 </style>
 </head>
 <body>
@@ -220,6 +297,8 @@ var R5CUFF=null;        // אזהרת אזוק לפני יציאה {ci, list:[{p
 var R5UNCUFF=null;      // אזהרת החזרת אזיקים בחזרה {ci, list:[{pi,name,num}]}
 var OFF_CONFIRM=null;   // אינדקס עמודה הממתינה לאישור השבתה
 var EDIT_NAME=null;     // עריכת שם בחלון הסטטיסטיקה {ci,pi}
+var NEWEV=null;         // טופס דיווח אירוע חדש {title, rows:[{name,num}]}
+var PREFS={textSize:1,zoom:1,light:false}; // העדפות תצוגה/נגישות
 var CAN_SAVE=true;
 try{localStorage.setItem('__t','1');localStorage.removeItem('__t');}catch(e){CAN_SAVE=false;}
 
@@ -230,6 +309,28 @@ function save(){
     localStorage.setItem('dutyState',JSON.stringify(STATE));
     localStorage.setItem('dutyR5',JSON.stringify(RAMAS5));
   }catch(e){}
+}
+function loadPrefs(){
+  if(!CAN_SAVE)return;
+  try{
+    var p=localStorage.getItem('dutyPrefs');
+    if(p){
+      var o=JSON.parse(p)||{};
+      if(o.textSize)PREFS.textSize=+o.textSize;
+      if(o.zoom)PREFS.zoom=+o.zoom;
+      PREFS.light=!!o.light;
+    }
+  }catch(e){}
+}
+function savePrefs(){
+  if(!CAN_SAVE)return;
+  try{localStorage.setItem('dutyPrefs',JSON.stringify(PREFS));}catch(e){}
+}
+function applyPrefs(){
+  var el=document.documentElement;
+  el.style.setProperty('--tscale',PREFS.textSize||1);
+  el.style.zoom=(PREFS.zoom&&PREFS.zoom!==1)?PREFS.zoom:'';
+  document.body.classList.toggle('light',!!PREFS.light);
 }
 function load(){
   if(!CAN_SAVE)return;
@@ -403,7 +504,7 @@ function totals(){
 }
 function renderTop(){
   var top=document.getElementById('top');
-  if(!DATA||VIEW==='import'){top.innerHTML='';return;}
+  if(!DATA||VIEW==='import'||VIEW==='settings'){top.innerHTML='';return;}
   var t=totals();
   var pct=t.total===0?0:Math.round(t.back/t.total*100);
   top.innerHTML=
@@ -415,6 +516,7 @@ function renderTop(){
         '<button class="hbtn primary" data-act="newday">📥 יום חדש</button>'+
         '<button class="hbtn" data-act="reset" data-label="איפוס יום">איפוס יום</button>'+
         '<button class="hbtn r5" data-act="openr5">🔴 רמ"ס 5'+(RAMAS5.length?' · '+RAMAS5.length:'')+'</button>'+
+        '<button class="hbtn" data-act="opensettings" aria-label="הגדרות">⚙️ הגדרות</button>'+
       '</div>'+
     '</div>'+
     '<div class="stats">'+
@@ -467,7 +569,7 @@ function renderApp(){
   var html;
   if(rows){
     var maxN=1;rows.forEach(function(r){if(r.length>maxN)maxN=r.length;});
-    var fs=maxN<=3?11.5:(maxN===4?10.5:(maxN===5?9.5:(maxN===6?8.5:8)));
+    var fs=(maxN<=3?11.5:(maxN===4?10.5:(maxN===5?9.5:(maxN===6?8.5:8))))*(PREFS.textSize||1);
     html='<div class="sheetwrap"><div class="sheet grid" style="--w:'+(100/maxN).toFixed(3)+'%;--fs:'+fs+'px">';
     rows.forEach(function(r){
       html+='<div class="srow">';
@@ -488,6 +590,7 @@ function renderApp(){
     '<span>🔗 אזוק</span>'+
     '<span><i class="ldot" style="background:#F85149"></i>רמ"ס 5</span>'+
   '</div>';
+  html+=renderNewEvent();
   html+='<div class="foot">לחץ על עמודה כדי לפתוח אותה<br>הסטטוס נשמר אוטומטית במכשיר זה</div>';
   if(OPEN_COL!==null&&DATA.columns[OPEN_COL])html+=renderPopup(OPEN_COL);
   if(R5_OPEN)html+=renderR5();
@@ -796,10 +899,78 @@ function renderImport(){
     '</div>'+
   '</div>';
 }
+// ───────────────────────── דיווח אירוע חדש ─────────────────────────
+function renderNewEvent(){
+  var h='<div class="newevwrap">';
+  if(NEWEV){
+    h+='<div class="addform newevform">'+
+      '<div class="newevhdr">📝 דיווח אירוע חדש</div>'+
+      '<div class="newevsub">אירוע שצץ ולא מופיע בדוח של היום</div>'+
+      '<input class="aname" id="nevtitle" placeholder="כותרת האירוע (יעד)" value="'+esc(NEWEV.title)+'" autocomplete="off">';
+    NEWEV.rows.forEach(function(r,i){
+      h+='<div class="addr nevrow">'+
+        '<input class="aname" id="nevname_'+i+'" placeholder="שם מלא" value="'+esc(r.name)+'" autocomplete="off">'+
+        '<input class="anum" id="nevnum_'+i+'" placeholder="מס׳" value="'+esc(r.num)+'" inputmode="numeric" autocomplete="off">'+
+        (NEWEV.rows.length>1?'<button class="nevdel" data-act="nevdelrow" data-i="'+i+'" aria-label="הסר שורה">✕</button>':'')+
+      '</div>';
+    });
+    h+='<button class="addbtn" data-act="nevaddrow">+ הוסף עוד אדם</button>'+
+      '<div class="addr">'+
+        '<button class="aconfirm" data-act="nevconfirm">✓ צור אירוע</button>'+
+        '<button class="acancel" data-act="nevcancel">ביטול</button>'+
+      '</div>'+
+      '<div class="err" id="neverr"></div>'+
+    '</div>';
+  }else{
+    h+='<button class="addbtn newevbtn" data-act="nevopen">📝 דווח אירוע חדש שלא מופיע בטבלה</button>';
+  }
+  return h+'</div>';
+}
+function syncNewev(){
+  if(!NEWEV)return;
+  var t=document.getElementById('nevtitle');
+  if(t)NEWEV.title=t.value;
+  NEWEV.rows.forEach(function(r,i){
+    var n=document.getElementById('nevname_'+i);if(n)r.name=n.value;
+    var m=document.getElementById('nevnum_'+i);if(m)r.num=m.value;
+  });
+}
+// ───────────────────────── דף הגדרות ─────────────────────────
+function renderSettings(){
+  var p=PREFS;
+  var cols=(DATA&&DATA.columns)||[];
+  var h='<div class="imp settings">'+
+    '<div class="sethead"><button class="pclose" data-act="closesettings" aria-label="חזור">✕</button><h2>⚙️ הגדרות</h2></div>'+
+    '<div class="setsec"><h3>נגישות ותצוגה</h3>'+
+      '<div class="setrow"><label>גודל טקסט</label><input type="range" id="tsRange" min="0.8" max="1.6" step="0.05" value="'+p.textSize+'"><span class="setval" id="tsVal">'+Math.round(p.textSize*100)+'%</span></div>'+
+      '<div class="setrow"><label>זום</label><input type="range" id="zoomRange" min="0.8" max="1.5" step="0.05" value="'+p.zoom+'"><span class="setval" id="zoomVal">'+Math.round(p.zoom*100)+'%</span></div>'+
+      '<div class="setrow"><label>מצב בהיר</label><div style="flex:1"></div><button class="toggle'+(p.light?' on':'')+'" data-act="togglelight" role="switch" aria-checked="'+(p.light?'true':'false')+'" aria-label="מצב בהיר"><span class="knob"></span></button></div>'+
+      '<button class="acancel" data-act="resetprefs" style="margin-top:10px">↺ איפוס הגדרות תצוגה</button>'+
+    '</div>'+
+    '<div class="setsec"><h3>שמות אירועים</h3>';
+  if(!cols.length){
+    h+='<div class="csub">אין אירועים. טען יום חדש כדי לערוך שמות.</div>';
+  }else{
+    h+='<div class="newevsub" style="margin-bottom:8px">ערוך את שם האירוע (היעד) של כל עמודה</div>';
+    cols.forEach(function(c,ci){
+      var color=PALETTE[ci%PALETTE.length];
+      h+='<div class="setrow renrow" style="--c:'+color+'"><span class="rendot"></span>'+
+        '<input class="ename rendest" id="rndest_'+ci+'" value="'+esc(c.dest)+'" placeholder="שם האירוע" autocomplete="off"></div>';
+    });
+    h+='<button class="aconfirm" data-act="renamesave" style="margin-top:10px">✓ שמור שמות</button>'+
+      '<div class="r5msg ok" id="renmsg" style="min-height:17px"></div>';
+  }
+  h+='</div>'+
+    '<div class="foot">ההגדרות נשמרות במכשיר זה</div>'+
+  '</div>';
+  document.getElementById('main').innerHTML=h;
+}
 function render(){
-  if(!DATA)VIEW='import';
+  if(!DATA&&VIEW!=='settings')VIEW='import';
   renderTop();
-  if(VIEW==='import')renderImport();else renderApp();
+  if(VIEW==='import')renderImport();
+  else if(VIEW==='settings')renderSettings();
+  else renderApp();
 }
 
 // ───────────────────────── אירועים ─────────────────────────
@@ -851,6 +1022,67 @@ document.addEventListener('click',function(ev){
   }
   else if(act==='editcancel'){
     EDIT_NAME=null;render();
+  }
+  else if(act==='opensettings'){
+    VIEW='settings';OPEN_COL=null;OPEN_STAT=null;R5_OPEN=false;ADD_OPEN=null;EDIT_NAME=null;NEWEV=null;
+    render();window.scrollTo(0,0);
+  }
+  else if(act==='closesettings'){
+    VIEW='app';render();window.scrollTo(0,0);
+  }
+  else if(act==='togglelight'){
+    PREFS.light=!PREFS.light;applyPrefs();savePrefs();render();
+  }
+  else if(act==='resetprefs'){
+    PREFS={textSize:1,zoom:1,light:false};applyPrefs();savePrefs();render();
+  }
+  else if(act==='renamesave'){
+    if(!DATA)return;
+    var changed=0;
+    DATA.columns.forEach(function(c,ci){
+      var el=document.getElementById('rndest_'+ci);
+      if(el){var v=el.value.trim();if(v&&v!==c.dest){c.dest=v;changed++;}}
+    });
+    save();
+    var rm=document.getElementById('renmsg');
+    if(rm)rm.textContent=changed?('✓ עודכנו '+changed+' שמות'):'אין שינויים לשמירה';
+  }
+  else if(act==='nevopen'){
+    NEWEV={title:'',rows:[{name:'',num:''}]};render();
+    var nt=document.getElementById('nevtitle');if(nt)nt.focus();
+  }
+  else if(act==='nevcancel'){
+    NEWEV=null;render();
+  }
+  else if(act==='nevaddrow'){
+    syncNewev();NEWEV.rows.push({name:'',num:''});render();
+    var nn=document.getElementById('nevname_'+(NEWEV.rows.length-1));if(nn)nn.focus();
+  }
+  else if(act==='nevdelrow'){
+    var ri=+btn.getAttribute('data-i');
+    syncNewev();
+    if(NEWEV&&NEWEV.rows.length>1&&isFinite(ri)){NEWEV.rows.splice(ri,1);render();}
+  }
+  else if(act==='nevconfirm'){
+    syncNewev();
+    var nevErr=document.getElementById('neverr');
+    var nevTitle=(NEWEV.title||'').trim();
+    if(!nevTitle){
+      if(nevErr)nevErr.textContent='יש להזין כותרת לאירוע.';
+      var ntb=document.getElementById('nevtitle');if(ntb){ntb.classList.add('bad');ntb.focus();}
+      return;
+    }
+    var nevPeople=NEWEV.rows.map(function(r){
+      return{name:(r.name||'').trim(),num:(r.num||'').trim(),note:''};
+    }).filter(function(pp){return pp.name;});
+    if(!nevPeople.length){
+      if(nevErr)nevErr.textContent='יש להזין לפחות שם אחד.';
+      return;
+    }
+    DATA.columns.push({dest:nevTitle,noPrefix:false,disabled:false,people:nevPeople});
+    var nci=DATA.columns.length-1;
+    nevPeople.forEach(function(_,pp){STATE[nci+':'+pp]={s:0,st:0,a:0,ao:0};});
+    NEWEV=null;save();render();
   }
   else if(act==='selall'){
     var all=DATA.columns[ci].people.length>0&&DATA.columns[ci].people.every(function(_,pi){return st(ci,pi).s;});
@@ -1058,6 +1290,8 @@ document.addEventListener('keydown',function(ev){
   if((ev.key==='Enter'||ev.key===' ')&&ev.target&&ev.target.getAttribute&&ev.target.getAttribute('data-act')==='openstat'){
     ev.preventDefault();ev.target.click();return;
   }
+  if(ev.key==='Escape'&&VIEW==='settings'){VIEW='app';render();return;}
+  if(ev.key==='Escape'&&NEWEV){NEWEV=null;render();return;}
   if(ev.key==='Escape'&&OFF_CONFIRM!==null){OFF_CONFIRM=null;render();return;}
   if(ev.key==='Escape'&&R5UNCUFF){R5UNCUFF=null;render();return;}
   if(ev.key==='Escape'&&R5CUFF){R5CUFF=null;render();return;}
@@ -1081,12 +1315,23 @@ document.addEventListener('keydown',function(ev){
   }
 });
 document.addEventListener('input',function(ev){
-  if(ev.target&&(ev.target.id==='addname'||ev.target.id==='r5name'))ev.target.classList.remove('bad');
+  var t=ev.target;if(!t)return;
+  if(t.id==='addname'||t.id==='r5name'||t.id==='nevtitle')t.classList.remove('bad');
+  if(t.id==='tsRange'){
+    PREFS.textSize=parseFloat(t.value)||1;applyPrefs();savePrefs();
+    var tl=document.getElementById('tsVal');if(tl)tl.textContent=Math.round(PREFS.textSize*100)+'%';
+  }
+  if(t.id==='zoomRange'){
+    PREFS.zoom=parseFloat(t.value)||1;applyPrefs();savePrefs();
+    var zl=document.getElementById('zoomVal');if(zl)zl.textContent=Math.round(PREFS.zoom*100)+'%';
+  }
 });
 
 // ───────────────────────── אתחול ─────────────────────────
 if(!CAN_SAVE)document.getElementById('nosave').style.display='block';
 load();
+loadPrefs();
+applyPrefs();
 rebuildR5();
 render();
 </script>
